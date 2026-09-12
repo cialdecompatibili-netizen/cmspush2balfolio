@@ -1,10 +1,10 @@
 <!-- Hero Slider - facile da modificare: cambia image/title/text qui sotto -->
 {% assign slides = "" | split: "" %}
-{% assign s1 = "img/1.jpg|Benvenuto|Racconta qui la prima cosa che vuoi mostrare" | split: "|" %}
-{% assign s2 = "img/2.jpg|Esplora i contenuti|Una breve descrizione della seconda slide" | split: "|" %}
-{% assign s3 = "img/3.jpg|Progetti in evidenza|Testo di presentazione per la terza slide" | split: "|" %}
-{% assign s4 = "img/4.jpg|Novità|Aggiorna questo testo con le ultime novità" | split: "|" %}
-{% assign s5 = "img/5.jpg|Contattaci|Un invito all'azione per chiudere lo slider" | split: "|" %}
+{% assign s1 = "assets/img/1.jpg|Benvenuto|Racconta qui la prima cosa che vuoi mostrare" | split: "|" %}
+{% assign s2 = "assets/img/2.jpg|Esplora i contenuti|Una breve descrizione della seconda slide" | split: "|" %}
+{% assign s3 = "assets/img/3.jpg|Progetti in evidenza|Testo di presentazione per la terza slide" | split: "|" %}
+{% assign s4 = "assets/img/4.jpg|Novità|Aggiorna questo testo con le ultime novità" | split: "|" %}
+{% assign s5 = "assets/img/5.jpg|Contattaci|Un invito all'azione per chiudere lo slider" | split: "|" %}
 {% assign slides = slides | push: s1 | push: s2 | push: s3 | push: s4 | push: s5 %}
 
 <div class="hero-slider" id="heroSlider">
