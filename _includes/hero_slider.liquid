@@ -1,0 +1,149 @@
+<!-- Hero Slider - facile da modificare: cambia image/title/text qui sotto -->
+{% assign slides = "" | split: "" %}
+{% assign s1 = "img/1.jpg|Benvenuto|Racconta qui la prima cosa che vuoi mostrare" | split: "|" %}
+{% assign s2 = "img/2.jpg|Esplora i contenuti|Una breve descrizione della seconda slide" | split: "|" %}
+{% assign s3 = "img/3.jpg|Progetti in evidenza|Testo di presentazione per la terza slide" | split: "|" %}
+{% assign s4 = "img/4.jpg|Novità|Aggiorna questo testo con le ultime novità" | split: "|" %}
+{% assign s5 = "img/5.jpg|Contattaci|Un invito all'azione per chiudere lo slider" | split: "|" %}
+{% assign slides = slides | push: s1 | push: s2 | push: s3 | push: s4 | push: s5 %}
+
+<div class="hero-slider" id="heroSlider">
+  <div class="hero-slider-track">
+    {% for s in slides %}
+      {% assign idx = forloop.index0 %}
+      <div class="hero-slide {% if idx == 0 %}active{% endif %}" data-index="{{ idx }}">
+        <div class="hero-slide-bg" style="background-image:url('{{ s[0] | relative_url }}');"></div>
+        <div class="hero-slide-overlay"></div>
+        <div class="hero-slide-content">
+          <h2>{{ s[1] }}</h2>
+          <p>{{ s[2] }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <button class="hero-slider-arrow prev" aria-label="Precedente">&#10094;</button>
+  <button class="hero-slider-arrow next" aria-label="Successiva">&#10095;</button>
+
+  <div class="hero-slider-dots">
+    {% for s in slides %}
+      <button class="hero-slider-dot {% if forloop.index0 == 0 %}active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Vai a slide {{ forloop.index }}"></button>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.hero-slider {
+  position: relative;
+  width: 100%;
+  height: 62vh;
+  min-height: 380px;
+  max-height: 620px;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 2.5rem;
+}
+.hero-slider-track { position: relative; width: 100%; height: 100%; }
+.hero-slide {
+  position: absolute; inset: 0;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.7s ease;
+}
+.hero-slide.active { opacity: 1; visibility: visible; }
+.hero-slide-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  background-color: #1c1c1c;
+}
+.hero-slide-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.05) 100%);
+}
+.hero-slide-content {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 2rem 2.2rem 1.9rem;
+  color: #fff;
+}
+.hero-slide-content h2 {
+  font-size: 2rem; font-weight: 700; margin: 0 0 0.4rem;
+  color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+}
+.hero-slide-content p {
+  font-size: 1.05rem; margin: 0; max-width: 640px;
+  color: rgba(255,255,255,0.92);
+}
+.hero-slider-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.35); color: #fff; border: none;
+  width: 42px; height: 42px; border-radius: 50%;
+  font-size: 1rem; cursor: pointer; z-index: 3;
+  opacity: 0; transition: opacity 0.25s ease, background 0.25s ease;
+}
+.hero-slider:hover .hero-slider-arrow { opacity: 1; }
+.hero-slider-arrow:hover { background: rgba(0,0,0,0.6); }
+.hero-slider-arrow.prev { left: 16px; }
+.hero-slider-arrow.next { right: 16px; }
+.hero-slider-dots {
+  position: absolute; bottom: 16px; right: 20px; z-index: 3;
+  display: flex; gap: 8px;
+}
+.hero-slider-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: rgba(255,255,255,0.45); border: none; cursor: pointer;
+  padding: 0; transition: background 0.25s ease, transform 0.25s ease;
+}
+.hero-slider-dot.active { background: #e8a13a; transform: scale(1.25); }
+@media (max-width: 576px) {
+  .hero-slider { height: 44vh; min-height: 280px; border-radius: 6px; }
+  .hero-slide-content { padding: 1.2rem 1.1rem 1.1rem; }
+  .hero-slide-content h2 { font-size: 1.4rem; }
+  .hero-slide-content p { font-size: 0.92rem; }
+  .hero-slider-arrow { display: none; }
+}
+</style>
+
+<script>
+(function () {
+  var root = document.getElementById('heroSlider');
+  if (!root) return;
+  var slides = root.querySelectorAll('.hero-slide');
+  var dots = root.querySelectorAll('.hero-slider-dot');
+  var prevBtn = root.querySelector('.hero-slider-arrow.prev');
+  var nextBtn = root.querySelector('.hero-slider-arrow.next');
+  var current = 0;
+  var timer = null;
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function goTo(index) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (index + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  function start() {
+    if (reduceMotion || slides.length < 2) return;
+    stop();
+    timer = setInterval(next, 5000);
+  }
+  function stop() { if (timer) clearInterval(timer); }
+
+  if (nextBtn) nextBtn.addEventListener('click', function () { next(); start(); });
+  if (prevBtn) prevBtn.addEventListener('click', function () { prev(); start(); });
+  dots.forEach(function (dot) {
+    dot.addEventListener('click', function () {
+      goTo(parseInt(dot.getAttribute('data-index'), 10));
+      start();
+    });
+  });
+
+  root.addEventListener('mouseenter', stop);
+  root.addEventListener('mouseleave', start);
+
+  start();
+})();
+</script>

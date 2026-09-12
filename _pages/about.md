@@ -4,14 +4,7 @@ title: home
 permalink: /
 subtitle: <a href='#'>Affiliazioni</a>. Indirizzo. Contatti. Motto. Ecc.
 
-profile:
-  align: right
-  image: prof_pic.jpg
-  image_circular: false # crops the image to make it circular
-  more_info: >
-    <p>555 numero del tuo ufficio</p>
-    <p>123 via del tuo indirizzo</p>
-    <p>La tua città, provincia 12345</p>
+profile: false # disattivato: sostituito dallo slider hero in cima alla home
 
 selected_papers: false # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
