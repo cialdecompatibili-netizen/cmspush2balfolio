@@ -1,0 +1,83 @@
+backend:
+  name: github
+  repo: cialdecompatibili-netizen/cmspush2balfolio
+  branch: main
+
+media_folder: "assets/img"
+public_folder: "/assets/img"
+
+collections:
+  # Articoli blog (_posts/)
+  - name: "posts"
+    label: "Blog"
+    folder: "_posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
+      - { label: "Titolo", name: "title", widget: "string" }
+      - { label: "Data", name: "date", widget: "datetime" }
+      - { label: "Descrizione", name: "description", widget: "text", required: false }
+      - { label: "Tag", name: "tags", widget: "string", required: false, hint: "separati da spazio, es: formatting links" }
+      - { label: "Categoria", name: "categories", widget: "string", required: false }
+      - { label: "Corpo", name: "body", widget: "markdown" }
+
+  # Progetti (_projects/)
+  - name: "projects"
+    label: "Progetti"
+    folder: "_projects"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "page" }
+      - { label: "Titolo", name: "title", widget: "string" }
+      - { label: "Descrizione", name: "description", widget: "string", required: false }
+      - { label: "Immagine", name: "img", widget: "image", required: false }
+      - { label: "Ordine (importance)", name: "importance", widget: "number", default: 1 }
+      - { label: "Categoria", name: "category", widget: "string", hint: "deve corrispondere a display_categories in _pages/projects.md" }
+      - { label: "Corpo", name: "body", widget: "markdown" }
+
+  # Novità in home (_news/)
+  - name: "news"
+    label: "Novità"
+    folder: "_news"
+    create: true
+    slug: "announcement_{{fields.slugnum}}"
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
+      - { label: "Data", name: "date", widget: "datetime" }
+      - { label: "Inline", name: "inline", widget: "hidden", default: true }
+      - { label: "Numero (per slug file)", name: "slugnum", widget: "string", hint: "solo per il nome file, es: 4" }
+      - { label: "Testo", name: "body", widget: "markdown" }
+
+  # Pagine statiche principali
+  - name: "pages"
+    label: "Pagine"
+    files:
+      - label: "Home (about.md)"
+        name: "about"
+        file: "_pages/about.md"
+        fields:
+          - { label: "Sottotitolo", name: "subtitle", widget: "string", required: false }
+          - { label: "Corpo (bio)", name: "body", widget: "markdown", required: false }
+
+      - label: "Pagina Blog"
+        name: "blog_page"
+        file: "_pages/blog.md"
+        fields:
+          - { label: "Titolo", name: "title", widget: "string" }
+          - { label: "Descrizione", name: "description", widget: "text", required: false }
+
+      - label: "Pagina Progetti"
+        name: "projects_page"
+        file: "_pages/projects.md"
+        fields:
+          - { label: "Titolo", name: "title", widget: "string" }
+          - { label: "Descrizione", name: "description", widget: "text", required: false }
+          - { label: "Categorie visibili", name: "display_categories", widget: "list", hint: "solo queste categorie compaiono su /projects/" }
+
+      - label: "CV"
+        name: "cv_page"
+        file: "_pages/cv.md"
+        fields:
+          - { label: "Titolo", name: "title", widget: "string" }
