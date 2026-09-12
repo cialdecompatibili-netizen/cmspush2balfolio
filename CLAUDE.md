@@ -1,5 +1,85 @@
 # CLAUDE.md
 
+## 🚩 PROGETTO MIRCO — cmspush2balfolio (leggi questa sezione prima di tutto)
+
+**Cos'è:** sito personale (portfolio/blog) di Mirco, clone al-folio, deploy automatico
+su GitHub Pages via GitHub Actions.
+
+- Path locale: `C:\Users\mirco\Desktop\cmspush2balfolio\`
+- Repo: https://github.com/cialdecompatibili-netizen/cmspush2balfolio
+- Sito live: https://cialdecompatibili-netizen.github.io/cmspush2balfolio/
+- Build/Actions: https://github.com/cialdecompatibili-netizen/cmspush2balfolio/actions
+- Toolbox Python: `automation\cmspush2balfolio_tools.py` — TUTTO va pilotato da qui
+  (edit chirurgico + git add/commit/push + verifica live), mai a mano nei file
+  salvo casi non ancora coperti dalla toolbox.
+
+### Contenuti (post/progetti/categorie)
+```python
+import cmspush2balfolio_tools as site
+site.create_post(title=..., date="YYYY-MM-DD", description=..., tags=..., categories=..., body=...)
+site.create_project(slug=..., title=..., category="work", body=...)  # auto-crea la categoria se non esiste
+site.list_project_categories()      # categorie VINCOLATE (solo queste comparono su /projects/)
+site.add_project_category("nome")   # aggiunge categoria progetti
+site.remove_project_category("nome")
+site.list_blog_categories()         # categorie blog LIBERE, nessun vincolo — solo per coerenza/riuso
+```
+
+### Menu navbar / dropdown / footer
+```python
+site.list_nav_menu()                # stato COMPLETO del menu: ordine, titolo, nav true/false, dropdown
+site.toggle_nav_page("cv.md", False)  # mostra/nasconde una voce dal menu (non cancella la pagina)
+site.list_dropdown_children()       # voci del sottomenu "submenus"
+site.add_dropdown_child("titolo", "/permalink/")
+site.list_socials()                 # icone footer (_data/socials.yml)
+site.update_social("email", "nuovo@indirizzo.it")
+site.update_social("rss_icon", None)  # commenta/nasconde una icona
+```
+
+**Mappa pagine → menu (stato al 12/09/2026, verificare sempre con `list_nav_menu()` perché cambia):**
+
+| Voce | File in `_pages/` | nav | note |
+|---|---|---|---|
+| home | about.md | (sempre, è la root `/`) | bio, subtitle, more_info |
+| blog | blog.md | true | |
+| projects | projects.md | true | `display_categories` vincola le category progetti |
+| CV | cv.md | **false** | tolto dal menu su richiesta Mirco (12/09/2026), pagina resta raggiungibile su `/cv/` |
+| teaching | teaching.md | true | |
+| people | profiles.md | true | |
+| submenus (dropdown) | dropdown.md | true | children: bookshelf, blog |
+| publications | publications.md | false | contiene demo Einstein in `_bibliography/papers.bib`, mai attivata nel menu |
+| repositories | repositories.md | false | |
+| plugins | plugins.md | false | doc del tema, non toccare |
+| news | news.md | (nessun campo nav) | alimenta la sezione "novità" in home |
+
+**Regola:** per aggiungere/togliere qualsiasi voce dal menu usa SEMPRE
+`toggle_nav_page()` (edit chirurgico sul campo `nav`), mai riscrivere il file intero.
+Stessa logica per footer/social: SEMPRE `update_social()`, mai riscrivere `socials.yml`.
+
+### Home (about.md)
+- `selected_papers: false` (12/09/2026) — rimossa sezione "pubblicazioni selezionate"
+  demo (Einstein/Podolsky/Rosen) dalla home su richiesta Mirco.
+- Tradotto in italiano: "news"→"novità", "latest posts"→"ultimi articoli" via override
+  sicuro `_layouts/about.liquid` (solo 3 stringhe, non tocca header/menu).
+- Logo assente in home = comportamento standard del tema (si nasconde quando c'è la
+  foto profilo), non un bug.
+
+### Pubblicazione
+```python
+site.publish("messaggio commit")   # git add+commit+push, poi attende 90s e verifica live
+site.verify_live()                 # solo verifica 200, senza push
+```
+⚠️ `publish()` può superare il timeout della shell per via del `time.sleep(90)` —
+il push va comunque a buon fine, basta verificare con `verify_live()` o controllare
+lo stato della build su Actions (vedi link sopra) subito dopo.
+
+### ⚠️ NON toccare senza motivo
+`AGENTS.md` e tutto il resto di questo `CLAUDE.md` sotto questa sezione sono
+documentazione ORIGINALE del tema al-folio (per chi sviluppa il tema/le gem a monte,
+tipo `al_folio_core`). Non riguardano la gestione contenuti di Mirco — utili solo
+come riferimento tecnico se serve capire l'architettura interna del tema.
+
+---
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @AGENTS.md

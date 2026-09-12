@@ -379,6 +379,121 @@ def update_page_field(page_filename, field, value):
     print(f"{page_filename} aggiornato ({field}).")
 
 
+def toggle_nav_page(page_filename, show):
+    """
+    Mostra/nasconde una pagina dal menu navbar senza cancellarla (resta
+    raggiungibile via URL diretto). Edit chirurgico solo sul campo 'nav'.
+    Esempio: toggle_nav_page("cv.md", False)  # nasconde CV dal menu
+             toggle_nav_page("cv.md", True)   # lo rimette nel menu
+    """
+    path = os.path.join(PAGES_DIR, page_filename)
+    content = _read(path)
+    value = "true" if show else "false"
+    pattern = r"^nav:\s*(true|false)\s*$"
+    if re.search(pattern, content, flags=re.MULTILINE):
+        content = re.sub(pattern, f"nav: {value}", content, count=1, flags=re.MULTILINE)
+    else:
+        content = content.replace("---\n", f"nav: {value}\n---\n", 1)
+    _write(path, content)
+    print(f"{page_filename}: nav = {value}")
+
+
+def list_nav_menu():
+    """
+    Scansiona TUTTE le pagine in _pages/ e mostra lo stato del menu navbar:
+    quali sono visibili (nav: true), il loro ordine (nav_order), e quali
+    sono nascoste (nav: false o campo assente). Utile prima di editare il menu.
+    """
+    items = []
+    for f in sorted(os.listdir(PAGES_DIR)):
+        if not f.endswith(".md"):
+            continue
+        content = _read(os.path.join(PAGES_DIR, f))
+        nav_match = re.search(r"^nav:\s*(true|false)\s*$", content, flags=re.MULTILINE)
+        order_match = re.search(r"^nav_order:\s*(\d+)\s*$", content, flags=re.MULTILINE)
+        title_match = re.search(r"^title:\s*(.+)$", content, flags=re.MULTILINE)
+        is_dropdown = bool(re.search(r"^dropdown:\s*true\s*$", content, flags=re.MULTILINE))
+
+        nav = nav_match.group(1) if nav_match else "(assente)"
+        order = int(order_match.group(1)) if order_match else 999
+        title = title_match.group(1).strip() if title_match else f
+        items.append((order, f, title, nav, is_dropdown))
+
+    items.sort(key=lambda x: x[0])
+    print(f"{'ordine':<7}{'file':<20}{'titolo':<20}{'nav':<10}dropdown")
+    for order, f, title, nav, is_dropdown in items:
+        print(f"{order:<7}{f:<20}{title:<20}{nav:<10}{'sì' if is_dropdown else ''}")
+    return items
+
+
+def list_dropdown_children():
+    """
+    Mostra le voci del sottomenu 'submenus' (_pages/dropdown.md -> children).
+    """
+    content = _read(os.path.join(PAGES_DIR, "dropdown.md"))
+    print(content.split("---")[1] if content.count("---") >= 2 else content)
+    return content
+
+
+def add_dropdown_child(title, permalink):
+    """
+    Aggiunge una voce al sottomenu dropdown (_pages/dropdown.md -> children).
+    Esempio: add_dropdown_child("progetti", "/projects/")
+    """
+    path = os.path.join(PAGES_DIR, "dropdown.md")
+    content = _read(path)
+    new_entry = f"  - title: {title}\n    permalink: {permalink}\n"
+    # inserisce prima della chiusura del frontmatter (secondo '---')
+    parts = content.split("---")
+    if len(parts) < 3:
+        print("Formato dropdown.md inatteso, nessuna modifica fatta.")
+        return False
+    parts[1] = parts[1].rstrip("\n") + "\n" + new_entry
+    content = "---".join(parts)
+    _write(path, content)
+    print(f"Voce '{title}' aggiunta al dropdown -> {permalink}")
+    return True
+
+
+# ---------------------------------------------------------------------------
+# FOOTER / SOCIAL ICONS (_data/socials.yml)
+# ---------------------------------------------------------------------------
+
+SOCIALS_PATH = os.path.join(PROJECT_PATH, "_data", "socials.yml")
+
+
+def list_socials():
+    """Mostra il contenuto attuale di _data/socials.yml (icone footer)."""
+    content = _read(SOCIALS_PATH)
+    print(content)
+    return content
+
+
+def update_social(key, value):
+    """
+    Modifica/aggiunge una voce in _data/socials.yml (edit chirurgico).
+    Esempio: update_social("email", "mirco@example.com")
+             update_social("rss_icon", "true")
+    Per rimuovere un'icona, commentala manualmente (prefisso #) o passa
+    value=None per commentarla automaticamente.
+    """
+    content = _read(SOCIALS_PATH)
+    if value is None:
+        pattern = rf"^{key}:.*$"
+        content = re.sub(pattern, f"# {key}:", content, count=1, flags=re.MULTILINE)
+        _write(SOCIALS_PATH, content)
+        print(f"{key} commentato (icona nascosta) in socials.yml")
+        return
+
+    pattern = rf"^#?\s*{key}:.*$"
+    if re.search(pattern, content, flags=re.MULTILINE):
+        content = re.sub(pattern, f"{key}: {value}", content, count=1, flags=re.MULTILINE)
+    else:
+        content = content.rstrip("\n") + f"\n{key}: {value}\n"
+    _write(SOCIALS_PATH, content)
+    print(f"socials.yml aggiornato: {key} = {value}")
+
+
 # ---------------------------------------------------------------------------
 # PUBBLICAZIONE
 # ---------------------------------------------------------------------------
