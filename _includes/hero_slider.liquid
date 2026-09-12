@@ -2,10 +2,7 @@
 {% assign slides = "" | split: "" %}
 {% assign s1 = "assets/img/1.jpg|Benvenuto|Racconta qui la prima cosa che vuoi mostrare" | split: "|" %}
 {% assign s2 = "assets/img/2.jpg|Esplora i contenuti|Una breve descrizione della seconda slide" | split: "|" %}
-{% assign s3 = "assets/img/3.jpg|Progetti in evidenza|Testo di presentazione per la terza slide" | split: "|" %}
-{% assign s4 = "assets/img/4.jpg|Novità|Aggiorna questo testo con le ultime novità" | split: "|" %}
-{% assign s5 = "assets/img/5.jpg|Contattaci|Un invito all'azione per chiudere lo slider" | split: "|" %}
-{% assign slides = slides | push: s1 | push: s2 | push: s3 | push: s4 | push: s5 %}
+{% assign slides = slides | push: s1 | push: s2 %}
 
 <div class="hero-slider" id="heroSlider">
   <div class="hero-slider-track">
@@ -98,7 +95,12 @@
   .hero-slide-content { padding: 1.2rem 1.1rem 1.1rem; }
   .hero-slide-content h2 { font-size: 1.4rem; }
   .hero-slide-content p { font-size: 0.92rem; }
-  .hero-slider-arrow { display: none; }
+  .hero-slider-arrow {
+    opacity: 1;
+    width: 34px; height: 34px; font-size: 0.85rem;
+  }
+  .hero-slider-arrow.prev { left: 8px; }
+  .hero-slider-arrow.next { right: 8px; }
 }
 </style>
 
