@@ -32,11 +32,17 @@ USO:
         slug="10_project",
         title="Nome progetto",
         description="Descrizione breve",
-        category="work",   # work o fun (vedi display_categories in _pages/projects.md)
+        category="work",   # se la categoria non esiste, viene creata al volo
         importance=1,
         body="Testo lungo del progetto in markdown."
     )
     site.list_projects()
+    site.list_project_categories()
+    site.add_project_category("viaggi")
+    site.remove_project_category("fun")
+
+    # --- CATEGORIE BLOG (libere, nessun vincolo) ---
+    site.list_blog_categories()
 
     # --- PUBBLICAZIONE ---
     site.publish("Descrizione della modifica")   # git add+commit+push+verifica live
@@ -66,6 +72,7 @@ ABOUT_PATH = os.path.join(PROJECT_PATH, "_pages", "about.md")
 POSTS_DIR = os.path.join(PROJECT_PATH, "_posts")
 PROJECTS_DIR = os.path.join(PROJECT_PATH, "_projects")
 PAGES_DIR = os.path.join(PROJECT_PATH, "_pages")
+PROJECTS_PAGE_PATH = os.path.join(PAGES_DIR, "projects.md")
 SITE_URL = "https://cialdecompatibili-netizen.github.io/cmspush2balfolio/"
 
 
@@ -181,17 +188,124 @@ def list_posts():
     return files
 
 
+def list_blog_categories():
+    """
+    Scansiona tutti i post in _posts/ e restituisce le categorie già usate.
+    A differenza dei progetti, le categorie blog sono LIBERE (nessuna lista
+    fissa da rispettare) — questa funzione serve solo per riuso/coerenza,
+    per evitare di creare varianti tipo "novità" e "novita" sullo stesso sito.
+    """
+    cats = set()
+    for f in sorted(os.listdir(POSTS_DIR)):
+        if not f.endswith(".md"):
+            continue
+        content = _read(os.path.join(POSTS_DIR, f))
+        match = re.search(r"^categories:\s*(.+)$", content, flags=re.MULTILINE)
+        if match:
+            cats.update(match.group(1).split())
+    cats = sorted(cats)
+    print("Categorie blog già in uso:", cats)
+    return cats
+
+
 # ---------------------------------------------------------------------------
 # PROGETTI (_projects/)
 # ---------------------------------------------------------------------------
 
-def create_project(slug, title, description="", category="work", importance=1, img=None, body=""):
+def list_project_categories():
+    """
+    Elenca le categorie progetti attualmente configurate in _pages/projects.md
+    (display_categories: [work, fun, ...]). Solo queste categorie fanno
+    comparire i progetti sulla pagina /projects/.
+    """
+    content = _read(PROJECTS_PAGE_PATH)
+    match = re.search(r"^display_categories:\s*\[(.*?)\]", content, flags=re.MULTILINE)
+    if not match:
+        print("Campo display_categories non trovato in projects.md")
+        return []
+    cats = [c.strip() for c in match.group(1).split(",") if c.strip()]
+    print("Categorie progetti configurate:", cats)
+    return cats
+
+
+def add_project_category(name):
+    """
+    Aggiunge una nuova categoria alla lista display_categories di _pages/projects.md
+    (edit chirurgico). Se esiste già, non fa nulla.
+    """
+    content = _read(PROJECTS_PAGE_PATH)
+    match = re.search(r"^display_categories:\s*\[(.*?)\]", content, flags=re.MULTILINE)
+    if not match:
+        print("Campo display_categories non trovato in projects.md")
+        return False
+
+    cats = [c.strip() for c in match.group(1).split(",") if c.strip()]
+    if name in cats:
+        print(f"Categoria '{name}' già presente.")
+        return True
+
+    cats.append(name)
+    new_line = f"display_categories: [{', '.join(cats)}]"
+    content = re.sub(
+        r"^display_categories:\s*\[.*?\]",
+        new_line,
+        content,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    _write(PROJECTS_PAGE_PATH, content)
+    print(f"Categoria '{name}' aggiunta. Categorie attuali: {cats}")
+    return True
+
+
+def remove_project_category(name):
+    """
+    Rimuove una categoria da display_categories in _pages/projects.md.
+    NOTA: i progetti esistenti con quella category NON vengono toccati/eliminati,
+    semplicemente smettono di comparire nella pagina finché non li riassegni.
+    """
+    content = _read(PROJECTS_PAGE_PATH)
+    match = re.search(r"^display_categories:\s*\[(.*?)\]", content, flags=re.MULTILINE)
+    if not match:
+        print("Campo display_categories non trovato in projects.md")
+        return False
+
+    cats = [c.strip() for c in match.group(1).split(",") if c.strip()]
+    if name not in cats:
+        print(f"Categoria '{name}' non presente, nulla da rimuovere.")
+        return True
+
+    cats.remove(name)
+    new_line = f"display_categories: [{', '.join(cats)}]"
+    content = re.sub(
+        r"^display_categories:\s*\[.*?\]",
+        new_line,
+        content,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    _write(PROJECTS_PAGE_PATH, content)
+    print(f"Categoria '{name}' rimossa. Categorie attuali: {cats}")
+    return True
+
+
+def create_project(slug, title, description="", category="work", importance=1, img=None, body="", auto_create_category=True):
     """
     Crea un nuovo progetto in _projects/<slug>.md
     slug: nome file senza estensione, es. "10_project"
-    category: deve essere una tra quelle in _pages/projects.md -> display_categories (work, fun)
+    category: deve essere una tra quelle in _pages/projects.md -> display_categories.
+              Se non esiste e auto_create_category=True (default), la crea al volo.
     importance: numero, ordina i progetti (1 = primo)
     """
+    existing_cats = list_project_categories()
+    if category not in existing_cats:
+        if auto_create_category:
+            add_project_category(category)
+        else:
+            print(f"ATTENZIONE: categoria '{category}' non esiste in display_categories "
+                  f"{existing_cats} — il progetto NON comparirà sulla pagina finché non "
+                  f"la aggiungi con add_project_category('{category}').")
+
     filename = f"{slug}.md" if not slug.endswith(".md") else slug
     path = os.path.join(PROJECTS_DIR, filename)
 
