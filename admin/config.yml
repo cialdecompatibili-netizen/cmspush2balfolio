@@ -16,9 +16,9 @@ collections:
     fields:
       - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
       - { label: "Titolo", name: "title", widget: "string" }
-      - { label: "Data", name: "date", widget: "datetime" }
+      - { label: "Data", name: "date", widget: "datetime", format: "YYYY-MM-DD HH:mm:ss", picker_utc: false }
       - { label: "Descrizione", name: "description", widget: "text", required: false }
-      - { label: "Tag", name: "tags", widget: "string", required: false, hint: "separati da spazio, es: formatting links" }
+      - { label: "Tag", name: "tags", widget: "list", required: false, hint: "una voce per tag" }
       - { label: "Categoria", name: "categories", widget: "string", required: false }
       - { label: "Corpo", name: "body", widget: "markdown" }
 
@@ -45,8 +45,9 @@ collections:
     slug: "announcement_{{fields.slugnum}}"
     fields:
       - { label: "Layout", name: "layout", widget: "hidden", default: "post" }
-      - { label: "Data", name: "date", widget: "datetime" }
+      - { label: "Data", name: "date", widget: "datetime", format: "YYYY-MM-DD HH:mm:ss ZZ" }
       - { label: "Inline", name: "inline", widget: "hidden", default: true }
+      - { label: "Related posts", name: "related_posts", widget: "hidden", default: false }
       - { label: "Numero (per slug file)", name: "slugnum", widget: "string", hint: "solo per il nome file, es: 4" }
       - { label: "Testo", name: "body", widget: "markdown" }
 
