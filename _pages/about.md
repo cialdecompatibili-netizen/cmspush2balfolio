@@ -2,15 +2,16 @@
 layout: about
 title: home
 permalink: /
-subtitle: Sviluppatore indipendente. Progetti web e automazione.
+subtitle: <a href='#'>Affiliazioni</a>. Indirizzo. Contatti. Motto. Ecc.
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false # crops the image to make it circular
   more_info: >
-    <p>Italia</p>
-    <p>Contattami per informazioni</p>
+    <p>555 numero del tuo ufficio</p>
+    <p>123 via del tuo indirizzo</p>
+    <p>La tua città, provincia 12345</p>
 
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
@@ -26,8 +27,8 @@ latest_posts:
   limit: 3 # leave blank to include all the blog posts
 ---
 
-Ciao, sono Mirco. Sviluppo e gestisco progetti web, automazioni e sistemi CMS personalizzati. Mi occupo di siti in produzione, pipeline di pubblicazione automatica e integrazione di strumenti AI nel flusso di lavoro quotidiano.
+Scrivi qui la tua biografia. Racconta al mondo qualcosa di te. Inserisci un link al tuo subreddit preferito [subreddit](https://www.reddit.com). Puoi anche mettere una foto. Il codice è già pronto, basta chiamare la tua immagine `prof_pic.jpg` e inserirla nella cartella `img/`.
 
-In questo spazio raccolgo i miei progetti, articoli tecnici e appunti di sviluppo. Ogni progetto nella sezione dedicata racconta cosa ho costruito e come.
+Metti il tuo indirizzo / casella postale / altre info subito sotto la foto. Puoi anche disabilitare ciascuno di questi elementi modificando la proprietà `profile` nell'intestazione YAML del tuo `_pages/about.md`. Modifica `_bibliography/papers.bib` e Jekyll renderizzerà automaticamente la tua [pagina delle pubblicazioni](/al-folio/publications/).
 
-Per contatti o collaborazioni, trovi i link ai miei profili qui sotto.
+Metti anche i link ai tuoi social media. Questo tema è predisposto per usare le icone [Font Awesome](https://fontawesome.com/) e [Academicons](https://jpswalsh.github.io/academicons/), come quelle qui sotto. Aggiungi Facebook, Twitter, LinkedIn, Google Scholar, oppure disabilitali tutti.
